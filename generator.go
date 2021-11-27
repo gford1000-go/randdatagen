@@ -85,7 +85,12 @@ func (g *generator) Create(w io.Writer) error {
 		record = append(record, g.createMobile())
 		record = append(record, randomdata.PhoneNumber())
 
-		_, err := w.Write([]byte(strings.Join(record, ",") + "\n"))
+		b := []byte(strings.Join(record, ","))
+		if i < g.recordCount-1 {
+			b = append(b, []byte("\n")...)
+		}
+
+		_, err := w.Write(b)
 		if err != nil {
 			return fmt.Errorf("record %v: %v", i, err)
 		}
