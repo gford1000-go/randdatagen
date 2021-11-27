@@ -21,6 +21,10 @@ type generator struct {
 	country     string
 }
 
+func (g *generator) wrap(s string) string {
+	return fmt.Sprintf("\"%v\"", s)
+}
+
 func (g *generator) createIndividual() []string {
 	gender := randomdata.Number(0, 2)
 
@@ -34,9 +38,9 @@ func (g *generator) createIndividual() []string {
 func (g *generator) createAddress() []string {
 	return []string{
 		fmt.Sprintf("%v", randomdata.Number(1, 250)),
-		randomdata.StreetForCountry(g.country),
-		randomdata.ProvinceForCountry(g.country),
-		randomdata.PostalCode(g.country),
+		g.wrap(randomdata.StreetForCountry(g.country)),
+		g.wrap(randomdata.ProvinceForCountry(g.country)),
+		g.wrap(randomdata.PostalCode(g.country)),
 	}
 }
 
@@ -78,17 +82,17 @@ func (g *generator) Create(w io.Writer) error {
 		individual := g.createIndividual()
 
 		record := []string{}
-		record = append(record, individual...)
-		record = append(record, g.createEmail(individual))
-		record = append(record, g.createDOB(18))
+		record = append(record, g.wrap(individual[0]))
+		record = append(record, g.wrap(individual[1]))
+		record = append(record, g.wrap(individual[2]))
+		record = append(record, g.wrap(g.createEmail(individual)))
+		record = append(record, g.wrap(g.createDOB(18)))
 		record = append(record, g.createAddress()...)
-		record = append(record, g.createMobile())
-		record = append(record, randomdata.PhoneNumber())
+		record = append(record, g.wrap(g.createMobile()))
+		record = append(record, g.wrap(randomdata.PhoneNumber()))
 
 		b := []byte(strings.Join(record, ","))
-		if i < g.recordCount-1 {
-			b = append(b, []byte("\n")...)
-		}
+		b = append(b, []byte("\n")...)
 
 		_, err := w.Write(b)
 		if err != nil {

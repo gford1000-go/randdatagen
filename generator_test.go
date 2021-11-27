@@ -17,7 +17,10 @@ func TestGenerator(t *testing.T) {
 		t.Fatalf("unexpected error - got %v", err)
 	}
 
-	records := strings.Split(builder.String(), "\n")
+	// Remove the last \n prior to splitting
+	s := builder.String()
+	records := strings.Split(s[:len(s)-1], "\n")
+
 	if len(records) != recordCount {
 		t.Fatalf("Invalid number of records: expected %v, got %v", recordCount, len(records))
 	}
